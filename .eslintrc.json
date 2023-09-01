@@ -1,0 +1,248 @@
+{
+    "root": true,
+    "overrides": [
+      {
+        "files": ["*.ts"],
+        "parserOptions": {
+          "project": ["tsconfig.json"]
+        },
+        "plugins": ["@typescript-eslint", "rxjs", "jsdoc", "simple-import-sort", "unused-imports"],
+        "extends": [
+          "eslint:recommended",
+          "plugin:@typescript-eslint/recommended",
+          "plugin:@typescript-eslint/recommended-requiring-type-checking",
+          "plugin:rxjs/recommended"
+        ],
+        "rules": {
+          "@typescript-eslint/no-empty-interface": [
+            "error",
+            {
+              "allowSingleExtends": true
+            }
+          ],
+          "@typescript-eslint/no-unused-vars": "off",
+          "@typescript-eslint/no-explicit-any": "off",
+          "@typescript-eslint/no-inferrable-types": "off", // not a fan...
+          "@typescript-eslint/prefer-as-const": "off", // works only for typescript >=3.4
+          "@typescript-eslint/no-empty-function": "off",
+          "@typescript-eslint/no-namespace": "off",
+          "no-constructor-return": "error",
+          "no-console": "error",
+          "object-shorthand": "error",
+          "prefer-const": "error",
+          "prefer-spread": "error",
+          "no-duplicate-imports": "error",
+          "no-bitwise": "error",
+          "no-param-reassign": "error",
+          "no-eval": "error",
+          "no-alert": "error",
+          "no-return-await": "error",
+          "no-return-assign": "error",
+          "no-sequences": "error",
+          "no-throw-literal": "error",
+          "prefer-rest-params": "error",
+          "no-constant-condition": ["error", { "checkLoops": false }], // Allow `while (true)`
+          // "no-unused-private-class-members": "error", available with eslint 8.10.0
+          "dot-notation": "error",
+          "eqeqeq": "error",
+          "curly": "error",
+          "no-restricted-imports": ["error", "@apollo/client"], // use @apollo/client/core. @apollo/client also imports @apollo/client/react, which we do not want.
+          "max-classes-per-file": "error",
+          "spaced-comment": ["error", "always", { "exceptions": ["*"] }],
+          "@typescript-eslint/array-type": ["error", { "default": "array-simple", "readonly": "array-simple" }],
+          "@typescript-eslint/consistent-type-assertions": "error",
+          "@typescript-eslint/explicit-member-accessibility": "error",
+          "@typescript-eslint/no-confusing-non-null-assertion": "error",
+          "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
+          "@typescript-eslint/no-unnecessary-type-arguments": "error",
+          "@typescript-eslint/prefer-for-of": "error",
+          "@typescript-eslint/prefer-optional-chain": "error",
+          "@typescript-eslint/promise-function-async": "error",
+          "@typescript-eslint/type-annotation-spacing": "error",
+          "@typescript-eslint/no-non-null-assertion": "error",
+          "@typescript-eslint/no-useless-constructor": "error",
+          "@typescript-eslint/no-shadow": "error",
+          "@typescript-eslint/unbound-method": "off",
+  
+          // These rules cause problems in the CI: They trigger some errors that are not triggered locally.
+          "@typescript-eslint/no-unnecessary-type-assertion": "off",
+          "@typescript-eslint/restrict-plus-operands": "off",
+  
+          "sort-imports": "off",
+          "simple-import-sort/imports": [
+            "error",
+            {
+              // The default grouping, but with type imports first as a separate group, sorting that group like non-type imports are grouped.
+              "groups": [
+                ["^node:.*\\u0000$", "^@?\\w.*\\u0000$", "^[^.].*\\u0000$", "^\\..*\\u0000$", "^src/.*\\u0000$", "^spec/.*\\u0000$"],
+                ["^\\u0000"],
+                ["^node:"],
+                ["^@?\\w"],
+                ["^"],
+                ["^\\.", "^src/", "^spec/"] // Also for angular projects: Include absolute mapped paths as "own imports"
+              ]
+            }
+          ],
+          "simple-import-sort/exports": "error",
+          "unused-imports/no-unused-vars": "off",
+          "unused-imports/no-unused-imports": "error",
+  
+          "@typescript-eslint/member-ordering": [
+            "error",
+            {
+              "default": {
+                "memberTypes": [
+                  "public-static-field",
+                  "protected-static-field",
+                  "private-static-field",
+                  "public-instance-field",
+                  "protected-instance-field",
+                  "private-instance-field",
+                  "public-constructor",
+                  "protected-constructor",
+                  "private-constructor",
+                  "public-instance-method",
+                  "protected-instance-method",
+                  "private-instance-method",
+                  "public-static-method",
+                  "protected-static-method",
+                  "private-static-method"
+                ]
+              }
+            }
+          ],
+  
+          // Variable names
+          "camelcase": "off",
+          "@typescript-eslint/naming-convention": [
+            "error",
+            {
+              "selector": "default",
+              "format": ["camelCase"],
+              "filter": {
+                "regex": "^(beforeIntent_|afterIntent_|beforeTransition_)$",
+                "match": false
+              }
+            },
+            {
+              "selector": "parameter",
+              "format": ["camelCase"],
+              "leadingUnderscore": "allowSingleOrDouble"
+            },
+            {
+              "selector": "variable",
+              "format": ["camelCase", "UPPER_CASE"]
+            },
+            {
+              "selector": "variable",
+              "modifiers": ["exported"],
+              "format": ["camelCase", "PascalCase", "UPPER_CASE"]
+            },
+            {
+              "selector": "memberLike",
+              "modifiers": ["private"],
+              "format": ["camelCase"],
+              "leadingUnderscore": "allow"
+            },
+            {
+              "selector": "classProperty",
+              "format": ["camelCase", "UPPER_CASE", "PascalCase"],
+              "modifiers": ["public", "readonly"]
+            },
+            {
+              "selector": "classProperty",
+              "format": ["camelCase", "PascalCase"],
+              "modifiers": ["public"]
+            },
+            {
+              "selector": "classProperty",
+              "format": ["camelCase", "UPPER_CASE"],
+              "modifiers": ["readonly"]
+            },
+            {
+              "selector": ["enumMember", "objectLiteralProperty", "typeProperty"],
+              "format": null // anything
+            },
+            {
+              "selector": "enum",
+              "format": ["camelCase", "PascalCase"]
+            },
+            {
+              "selector": "function",
+              "modifiers": ["exported"],
+              "format": ["camelCase", "PascalCase"]
+            },
+            {
+              "selector": "typeLike",
+              "format": ["PascalCase"],
+              "leadingUnderscore": "allowSingleOrDouble"
+            }
+          ],
+  
+          // Rxjs
+          "rxjs/no-compat": "error",
+          "rxjs/no-topromise": "error",
+          "rxjs/no-implicit-any-catch": "off",
+          "rxjs/no-sharereplay": "off",
+          "rxjs/suffix-subjects": [
+            "error",
+            {
+              "parameters": true,
+              "properties": true,
+              "suffix": "$",
+              "types": {
+                "^EventEmitter$": false
+              },
+              "variables": true
+            }
+          ],
+  
+          //JsDoc
+          "jsdoc/check-alignment": "error",
+  
+          // should be fixed some day
+          "@typescript-eslint/require-await": "off",
+          "@typescript-eslint/no-unsafe-assignment": "off",
+          "@typescript-eslint/no-unsafe-call": "off",
+          "@typescript-eslint/no-unsafe-member-access": "off",
+          "@typescript-eslint/no-unsafe-return": "off",
+          "@typescript-eslint/no-unsafe-argument": "off",
+          "@typescript-eslint/restrict-template-expressions": "off"
+        }
+      },
+      {
+        "files": ["*.entity.ts", "**/custom-matchers.ts"],
+        "rules": {
+          "max-classes-per-file": "off"
+        }
+      },
+      {
+        "files": ["*.spec.ts"],
+        "rules": {
+          "dot-notation": "off"
+        }
+      },
+      {
+        "files": ["*.js"],
+        "extends": ["eslint:recommended"],
+        "parserOptions": {
+          "ecmaVersion": "latest"
+        },
+        "env": {
+          "es6": true,
+          "browser": true,
+          "amd": true,
+          "node": true
+        },
+        "rules": {
+          "no-unused-vars": "off",
+          "no-constant-condition": ["error", { "checkLoops": false }] // Allow `while (true)`
+        }
+      },
+      {
+        "files": ["*.html"],
+        "extends": ["eslint:recommended"],
+        "rules": {}
+      }
+    ]
+  }

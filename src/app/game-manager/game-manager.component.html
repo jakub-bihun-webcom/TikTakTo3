@@ -1,0 +1,8 @@
+<div class="gridContainer" > 
+    <div class="playerBox"> PLAYER </div>
+    <app-play-field (sendSimplifiedGameState)="playerActed($event)"
+                    [currentPlayer]="currentPlayer"
+                    > PLAYBOX </app-play-field>
+    <div class="enemyBox"> ENEMY </div>
+    <div class="bracket"> BRACKET </div>
+</div> 

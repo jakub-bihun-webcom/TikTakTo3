@@ -1,0 +1,33 @@
+img{
+    width:100%;
+    height:100%;
+}
+
+
+:host{
+    width:calc(100%/3);
+    height: calc(100%/3);
+    padding: auto;
+    
+}
+
+:host(:hover){
+    filter:brightness(80%);
+}
+
+.player{
+    width:100%;
+    height:100%;
+}
+
+.enemy{
+    width:100%;
+    height:100%;
+    background-color: red;
+}
+
+.empty{
+    width:100%;
+    height:100%;
+    background-color: beige;
+}

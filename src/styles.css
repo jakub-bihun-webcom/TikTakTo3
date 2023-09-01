@@ -1,0 +1,35 @@
+/* You can add global styles to this file, and also import other style files */
+body{
+    width: 100vw;
+    height: 100vh;
+    background-color: aquamarine;
+    background-size: cover;
+}
+
+
+.gridContainer{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.bracket {
+    background-color: blueviolet;
+    width: 100%;
+    height:20%;
+}
+
+
+.playerBox{
+    width: 25%;
+    height:80%;
+}
+
+
+.enemyBox{
+    width: 25%;
+    height:80%;
+    background-color: pink;
+}

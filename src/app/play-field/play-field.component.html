@@ -1,0 +1,8 @@
+<ng-container class="container" #container *ngFor="let cell_row of gameState"> 
+    <app-play-cell *ngFor="let cell of cell_row"
+                    [cellData] = "cell"
+                    [currentPlayer]="currentPlayer"
+                    (changeInCellData)="updateGameState()"
+                    >
+    </app-play-cell>
+</ng-container>
