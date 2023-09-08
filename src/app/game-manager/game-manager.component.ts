@@ -1,25 +1,69 @@
 import { Component,HostListener, EventEmitter, Output, OnInit, ViewChild } from '@angular/core';
 import { PlayFieldComponent } from '../play-field/play-field.component';
+import { CellData } from '../cell-data';
+import { LogicTTTClassicService } from '../logic-tttclassic.service';
+import { BasicGameServiceService } from '../basic-game-service.service';
+import { GameModeData } from '../game-mode-data';
+import { TTTBeggarService } from '../tttbeggar.service';
+import { TTTBargainService } from '../tttbargain.service';
 
 @Component({
   selector: 'app-game-manager',
   templateUrl: './game-manager.component.html',
   styleUrls: ['./game-manager.component.css']
 })
+
 export class GameManagerComponent {
   currentPlayer? : 'O'|'X';
-  lastGameState? : string[][];
+  currentGame!   : GameModeData | undefined;
+  //TODO: Service for extracting a from of rules out of an array of params in gamelogic
+  settingRules   : boolean = false; 
+  player_O = 0;
+  player_X = 0;
+  isLoaded = false;
   isGameFinished : boolean = false;
+
+  //TODO: Get this into a Service
+  allGameModes : GameModeData[] = [
+    {displayName : "Classic TikTakToe",
+     gameLogic   : new LogicTTTClassicService},
+    {displayName : "Beggar's TikTakToe",
+     gameLogic   : new TTTBeggarService},
+    {displayName : "Bargain TikTakToe",
+     gameLogic   : new TTTBargainService},
+  ]
+
   @ViewChild(PlayFieldComponent) playField! : PlayFieldComponent;
+
 
   ngOnInit(){
     this.gameStart();
   }
   
+  selectGameMode(value:string){
+    for(let mode of this.allGameModes){
+      if(mode.displayName === value){
+        this.currentGame = mode;
+        console.log("Selected")
+      }
+    }
+
+    this.settingRules = true;
+  }
+
+  setRules(){
+    this.currentGame!.gameLogic.onSubmit();
+    this.settingRules = false;
+  }
+
   gameStart(){
     console.log("Game Started");
     this.declareFirst();
     this.isGameFinished = false;
+  }
+
+  gameReset(){
+
   }
 
   declareFirst(){
@@ -27,68 +71,20 @@ export class GameManagerComponent {
     console.log(`The first Move goes to ${this.currentPlayer}!`);
   }
 
-  changeCurrentPlayer(){
-    this.currentPlayer = (this.currentPlayer == 'X') ? 'O' : 'X';
-    console.log(`It is ${this.currentPlayer}s turn!`);
-  }
 
-  playerActed(in_gameState : string[][]){
-    if(this.isWinCondition(in_gameState)) {
-      this.declareWinner();
-      //this.playField.clearBoard();
-    } else if (this.isTie(in_gameState)){
-      this.declareTie();
-    } else {
-      this.lastGameState = in_gameState;
-      this.changeCurrentPlayer();
-    }
-  }
+  handleVerdict(verdict: CellData['cellState']){
+    if(verdict === 'O') this.player_O ++;
+    if(verdict === 'X') this.player_X ++;
 
-  isWinCondition(gameState_simple : string[][]) : boolean{
-    for(let playState_row of gameState_simple){
-      if(         // Checks Rows
-        playState_row[0] == this.currentPlayer && 
-        playState_row[1] == this.currentPlayer &&
-        playState_row[2] == this.currentPlayer  
-        ) return true;
-
-      else if(    // Checks Diagonal
-        gameState_simple[0][0] == this.currentPlayer && 
-        gameState_simple[1][1] == this.currentPlayer &&
-        gameState_simple[2][2] == this.currentPlayer  
-      ) return true; 
-
-      else if(     // Checks Anti-Diagonal
-        gameState_simple[0][2] == this.currentPlayer && 
-        gameState_simple[1][1] == this.currentPlayer &&
-        gameState_simple[2][0] == this.currentPlayer  
-        ) return true;
-
-      else for(var i = 0; i<=3; i++){
-        if(         // Checks Cols
-          gameState_simple[0][i] == this.currentPlayer && 
-          gameState_simple[1][i] == this.currentPlayer &&
-          gameState_simple[2][i] == this.currentPlayer
-          ) return true;  
-      }
-    } return false;
-  }
-
-
-  isTie(gameState:string[][]):boolean{
-    for (var row of gameState){
-      for (var cell of row){
-        if (cell != 'X' && cell != 'O'){
-          return false;
-        } 
-      } 
-    } return true;
+    this.playField.clearAllCells();
+    console.log("Game Finished")
+    
   }
 
   declareWinner(){
     this.isGameFinished = true;
     console.log("Heyho. You won");
-    setTimeout(this.playField.clearBoard, 500);
+    //setTimeout(this.playField.clearBoard, 500);
   }
 
   declareTie(){

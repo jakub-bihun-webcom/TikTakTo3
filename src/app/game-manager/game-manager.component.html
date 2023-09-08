@@ -1,8 +1,42 @@
-<div class="gridContainer" > 
-    <div class="playerBox"> PLAYER </div>
-    <app-play-field (sendSimplifiedGameState)="playerActed($event)"
+<div class="gridContainer" *ngIf="currentGame===undefined || settingRules == true" >
+    <div class="collumn"> 
+        <select id="gameModeList" #list class="modeSelect" (change)="selectGameMode(list.value)">
+            <option value="" disabled selected>Select GameMode</option>
+            <option *ngFor="let mode of allGameModes; let i = index">
+                {{mode.displayName}}
+            </option>
+        </select>
+
+        <ng-container  *ngIf="currentGame && settingRules" > 
+            <label> SET RULES</label>
+            <form [formGroup]="currentGame.gameLogic.formGameParams" (ngSubmit)="setRules()">
+                <input id="rows" type="text" formControlName="rows">
+                <input id="cols" type="text" formControlName="cols">
+                  
+                <button class="button" type="submit">Confirm</button>
+            </form>
+        </ng-container>
+    </div>
+</div> 
+
+
+
+<div class="gridContainer" *ngIf="currentGame && isLoaded" >
+    <div class="gameContainer" *ngIf = "isLoaded"> 
+        <div class="playerBox"> PLAYER Points {{player_O}} </div>
+        <app-play-field 
+                    (sendVerdict)  ="handleVerdict($event)"
                     [currentPlayer]="currentPlayer"
-                    > PLAYBOX </app-play-field>
-    <div class="enemyBox"> ENEMY </div>
-    <div class="bracket"> BRACKET </div>
+                    [gameLogic]    ="currentGame.gameLogic"> 
+        </app-play-field>
+        <div class="enemyBox"> ENEMY Points {{player_X}} </div>
+    </div> 
+    <div class="bracket"> 
+        <select id="gameModeList" #list class="modeSelect_side" (change)="selectGameMode(list.value)">
+            <option value="" disabled selected>Select GameMode</option>
+            <option *ngFor="let mode of allGameModes; let i = index">
+                {{mode.displayName}} 
+            </option>
+        </select>
+    </div>
 </div> 
