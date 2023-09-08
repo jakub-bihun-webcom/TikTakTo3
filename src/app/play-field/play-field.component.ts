@@ -1,59 +1,78 @@
-import { Input, Component, ViewChild, ViewContainerRef, Output, EventEmitter, ViewChildren, QueryList, OnInit} from '@angular/core';
+import { Input, Component, Output, EventEmitter, ViewChildren, QueryList, OnInit} from '@angular/core';
 import { PlayCellComponent } from '../play-cell/play-cell.component';
 import { CellData } from '../cell-data';
+import { LogicTTTClassicService } from '../logic-tttclassic.service';
+import { BasicGameServiceService } from '../basic-game-service.service';
 
 @Component({
   selector: 'app-play-field',
   templateUrl: './play-field.component.html',
-  styleUrls: ['./play-field.component.css']
+  styleUrls: ['./play-field.component.css'],
+  providers: [LogicTTTClassicService]
 })
 
 export class PlayFieldComponent{
-  gameState: CellData[][] = [];
+  gameState : CellData[][] = [];
+  canAct    : boolean      = true;
+  isLoaded  : boolean      = false;
+  @Input () gameLogic : BasicGameServiceService | undefined;
   @Input() currentPlayer? : 'O'|'X';
-  @Output() sendSimplifiedGameState = new EventEmitter<string[][]>();
+  @Output() sendVerdict = new EventEmitter<CellData['cellState']>();
 
   @ViewChildren(PlayCellComponent) allCells! : QueryList<PlayCellComponent>;
 
   constructor(){
-    
-    this.gameState = [];                                    
-    for(var j=0; j <= 2; j++){
-      var gameState_row: CellData[] = [];
-      for(var i=1; i <= 3; i++){
-        const cellData : CellData = {
-          cellID : (j*3)+i,
-          cellState: 'none'}
-        gameState_row.push(cellData);
-      }
-      this.gameState.push(gameState_row);
-    }
+                         
   }
 
+  ngOnInit(){
+    this.loadGame();
+  }
+
+  loadGame(){
+    this.gameState = this.gameLogic!.initialGameState;
+    this.isLoaded = true;
+  }
+
+  // -- GAME FLOW -- // TODO: Technically you could do this with an Interface
   updateGameState(){
-    this.toGameState_simple(this.gameState);
+    if(this.gameLogic !== undefined){
+      console.log(this.gameLogic.initialGameState)
+      if(this.gameLogic.isWinCondition(this.gameState, this.currentPlayer!)){
+        this.sendVerdict.emit(this.currentPlayer);
+      } else if (this.gameLogic.isTie(this.gameState)){
+        this.sendVerdict.emit(' ');
+      } else this.changeCurrentPlayer();
+    } 
+  };
+
+  changeCurrentPlayer(){
+    this.currentPlayer = (this.currentPlayer == 'X') ? 'O' : 'X';
+    console.log(`It is ${this.currentPlayer}s turn!`);
   }
 
-  clearBoard(){
-    for(var cell of this.allCells){
-      console.log(this.allCells);
-      cell.clearSelf();
+
+  // -- CELL BEHAVIOUR -- // 
+  markCell(cell:PlayCellComponent){
+    if(this.canAct == true) {
+      cell.cellData.cellState = this.currentPlayer!;
+      this.updateGameState();
     }
   }
 
-  // TODO: I doubt this is even necessarry... 
-  //       Might aswell just do it in strings, since we dont use cell index for anything
-  toGameState_simple(gameState:CellData[][]){
-    let gameState_simple : string[][] = [];
-    for(var row of gameState){
-      let gameState_simple_row:string[] = [];
-      for(var cell of row){
-        if(cell.cellState == 'O') gameState_simple_row.push('O');
-        else if(cell.cellState == 'X') gameState_simple_row.push('X');
-        else gameState_simple_row.push(' ');
-        }
-      gameState_simple.push(gameState_simple_row);
-    }
-    this.sendSimplifiedGameState.emit(gameState_simple);
+  clearCell(cell:PlayCellComponent){
+    cell.cellData.cellState = ' ';
   }
+
+  // TODO: Raising Flag is kinda cumbersome. Easier way?
+  clearAllCells(){
+    this.canAct = false;
+    setTimeout(():void => {
+      this.canAct = true;
+    }, 200*this.allCells.length-1);
+    for(let i = 0; i < this.allCells.length ; i++){
+      setTimeout(this.clearCell, 200*i, this.allCells.get(i));
+    } 
+  }
+
 }

@@ -1,5 +1,5 @@
-<img src='{{ "assets/images/" + this.imageID + ".png" }}'
-     [ngClass]="{'player':this.cellData.cellState == 'O',
+<div [ngClass]="{'player':this.cellData.cellState == 'O',
                  'enemy' :this.cellData.cellState == 'X',
-                 'empty' :this.cellData.cellState == 'none' }"
-     >
+                 'empty' :this.cellData.cellState == ' ' }"
+                 
+     > {{this.cellData.cellState}}

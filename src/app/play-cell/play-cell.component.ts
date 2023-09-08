@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, AfterViewInit } from '@angular/core';
 import { CellData } from '../cell-data';
 
 @Component({
@@ -9,31 +9,17 @@ import { CellData } from '../cell-data';
 
 
 
-export class PlayCellComponent{
-  //TODO: Pretty sure the GameState updates on its own. Not sure if Output necessary here
-  imageID?:string;
+export class PlayCellComponent implements AfterViewInit{
+  
   @Input() cellData! : CellData;
-  @Input() currentPlayer? : 'O' | 'X';
-  @Output() changeInCellData = new EventEmitter<CellData>();
-
+  @Output() wasClicked = new EventEmitter<PlayCellComponent>();
   @HostListener("click") markCell(){
-    if(this.designateCell(this.currentPlayer!)){
-      this.changeInCellData.emit(this.cellData);
+    if(this.cellData.cellState == ' '){
+      this.wasClicked.emit(this);
     };
   }
-
-  designateCell(owner:'O'|'X') : boolean{
-    if(this.cellData.cellState == 'none'){
-      this.cellData.cellState = owner;
-      this.imageID = owner;
-      return true;
-    } else return false;
-    
-  }
   
-  clearSelf(){
-    this.cellData.cellState = 'none';
-    this.imageID = 'none';
-    this.changeInCellData.emit(this.cellData);
+  ngAfterViewInit(){
+    this.cellData.cellRef = this;
   }
 }
