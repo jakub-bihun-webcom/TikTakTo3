@@ -1,0 +1,154 @@
+<div class="gridContainer" *ngIf="currentGame===undefined">
+    <div class="collumn"> 
+        <select [@shoveUp]="selectedGame? 'shoved' : 'none'" (@shoveUp.done)="setShoved(true);"  id="gameModeList" #list class="modeSelect" (change)="selectGameMode(list.value, true)">
+            <option value="" disabled selected>Select GameMode</option>
+            <option *ngFor="let mode of allGameModes; let i = index">
+                {{mode.displayName}}
+            </option>
+        </select>
+
+        <ng-container *ngIf="selectedGame"> 
+            <form [@blendIn]="isShoved? 'blended' : 'void'"  class="ruleForm" [formGroup]="selectedGame.gameLogic.formGameParams" (ngSubmit)="setRules()">
+                <div class="ruleTab" *ngFor="let rule of Object.keys(selectedGame.gameLogic.formGameParams.controls)">
+                    <ng-container *ngIf="(selectedGame.gameLogic.formGameParams.get(rule)!.value | typeof) === 'number'" > 
+                        <label class="ruleLabel"> {{rule}} </label>
+                        <input class="ruleInput" id="{{rule}}" type="number" formControlName="{{rule}}">  
+                    </ng-container> 
+                    <ng-container *ngIf="(selectedGame.gameLogic.formGameParams.get(rule)!.value | typeof) === 'string'"> 
+                        <label class="ruleLabel"> {{rule}} </label>
+                        <select class="ruleInput inputString" id="{{rule}}" formControlName="{{rule}}"> 
+                            <option value="Random"     >Rdm</option>
+                            <option value="Winner"     >Win</option>
+                            <option value="Loser"      >Los</option>
+                            <option value="Alternating">Alt</option>
+                        </select> 
+                    </ng-container>
+                </div>
+                <button class="button" [disabled]="!selectedGame.gameLogic.formGameParams.valid" type="submit">TicTacGo!</button>
+            </form>
+        </ng-container>
+
+    </div>
+</div> 
+
+
+<ng-container *ngIf="currentGame" > 
+    <mat-sidenav-container class="sidenav-container">
+        <mat-sidenav 
+            #drawer 
+            class="sidenav" 
+            fixedInViewport="true" 
+            mode="over">
+
+            <mat-toolbar class="toolContainer" > Settings </mat-toolbar>
+
+            <select id="gameModeList" #list class="modeSelect_side"  (change)="selectGameMode(list.value, false)">
+                <option [selected]="mode===currentGame" *ngFor="let mode of allGameModes; let i = index">
+                    {{mode.displayName}}
+                </option>
+            </select>
+            
+            <ng-container  *ngIf="selectedGame" > 
+                <form class="ruleForm_side" [formGroup]="selectedGame.gameLogic.formGameParams" (ngSubmit)="setRules()">
+                    <div class="ruleTab_side" *ngFor="let rule of Object.keys(selectedGame.gameLogic.formGameParams.controls)">
+                        <ng-container *ngIf="rule==='rowsXcols'" > 
+                            <label class="ruleLabel_side"> {{rule}}</label>
+                            <input class="ruleInput_side" id="{{rule}}" type="number" formControlName="{{rule}}">  
+                        </ng-container>
+                        
+                        <ng-container #roundOrder *ngIf="rule==='roundOrder'"> 
+                            <label class="ruleLabel_side"> {{rule}} </label>
+                            <select class="ruleInput_side inputString" id="{{rule}}" formControlName="{{rule}}"> 
+                                <option value="Random"     >Rdm</option>
+                                <option value="Winner"     >Win</option>
+                                <option value="Loser"      >Los</option>
+                                <option value="Alternating">Alt</option>
+                            </select>   
+                        </ng-container>
+                        <ng-container #typeNumber *ngIf="rule!=='roundOrder' && rule!=='rowsXcols'" > 
+                            <label class="ruleLabel_side"> {{rule}}</label>
+                            
+                            <input class="ruleInput_side" id="{{rule}}" type="number" formControlName="{{rule}}">  
+                        </ng-container>
+                    </div>
+                    <button class="sidenavButton" type="submit" [disabled]="!selectedGame.gameLogic.formGameParams.valid" (click)="drawer.toggle()" >TicTacGo!</button>
+                </form>
+            </ng-container>
+
+        </mat-sidenav>
+
+        <mat-sidenav-content>
+            <div class="gridContainer">
+                <div class="gameContainer"> 
+                    <!-- <div class="playerBox"> PLAYER Points {{player_O}} </div> -->
+                    <div class="scoreboard">
+                        <div class="scoreboard_game">
+                            <div class="scoreboard_displayName"> {{currentGame.displayName}} </div>
+                            <div class="scoreboard_round" *ngIf="currentGame.gameLogic.formGameParams.get('maxRounds')!.value! >= 1; else noRoundCount"> 
+                                Round {{currentGame.gameLogic.currentRound}} of {{currentGame.gameLogic.formGameParams.get("maxRounds")!.value}}
+                                <div *ngIf="currentGame.displayName=='Beggar TikTakToe'">
+                                    <button type="button" class="boardsNav" (click)="currentGame.gameLogic.navBoard(-1)">
+                                        <
+                                    </button>
+                                    <button type="button" class="boardsNav" style="left:80%;"  (click)="currentGame.gameLogic.navBoard(+1)">
+                                        >
+                                    </button>
+                                </div>
+                            </div>
+                            <ng-template #noRoundCount>
+                                <div class="scoreboard_round"> 
+                                    Round {{currentGame.gameLogic.currentRound}} 
+                                </div>
+                            </ng-template>
+                            
+                        </div>  
+                        <div class="player O" [ngClass]="currentGame.gameLogic.currentPlayer=='O' ? 'highlight' : 'lowlight'"> 
+                            <h1> O </h1>
+                            <div>
+                                <h2> {{player_O}} </h2>
+                                <div class="scorePulse" [@awardPoint]="setPulseO? 'pulsing' : 'standBy'" >  </div>
+                            </div>
+                            <h2 *ngIf = "Object.keys(currentGame.gameLogic.formGameParams.controls).includes('currency')">
+                                {{currentGame.gameLogic.gameSpecificVariables[0].currency}}
+                            </h2>
+                        </div>
+                        <div class="player X" [ngClass]="currentGame.gameLogic.currentPlayer=='X' ? 'highlight' : 'lowlight'"> 
+                            <h1> X </h1>
+                            <div>
+                                <h2> {{player_X}} </h2>
+                                <div class="scorePulse" [@awardPoint]="setPulseX? 'pulsing' : 'standBy'" >  </div>
+                            </div>
+                            <h2 *ngIf = "Object.keys(currentGame.gameLogic.formGameParams.controls).includes('currency')">
+                                {{currentGame.gameLogic.gameSpecificVariables[1].currency}}
+                            </h2>
+                        </div>    
+                    </div>
+
+                    <app-play-field
+                                id="playField" 
+                                (sendVerdict)  ="handleVerdict($event)"
+                                [gameLogic]    ="currentGame.gameLogic"> 
+                    </app-play-field>
+                    <div *ngIf="hasStrikeThrough != undefined"  class="strikeThrough" 
+                        [@strike]="{value:hasStrikeThrough != undefined ? 'active':'void', 
+                                    params: {widthOfStrike: hasStrikeThrough.strikeWidth,
+                                            originTop: hasStrikeThrough.originTop,
+                                            originLeft:hasStrikeThrough.originLeft,
+                                            strikeAngle:hasStrikeThrough.strikeAngle
+                                            }}"> </div>
+
+
+                    <div class="popUpWindow"  [@isPopUp]="isPopUp ? 'Display' : 'noDisplay'">
+                        <p class="popUpMessage"> {{popUpData}}! </p>
+                        <button class="popUpButton" [disabled]="!isPopUp" (click)="this.dismissPopUp()">  Play Again </button>
+                    </div>
+
+
+                </div> 
+            </div> 
+            <button type="button" class="sideNavToggle" aria-label="Toggle sidenav" (click)="drawer.toggle()">
+                 
+            </button>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</ng-container>

@@ -1,0 +1,13 @@
+<ng-container>
+    <ng-container *ngIf="isLoaded===true"> 
+        <ng-container class="container" *ngFor="let cell_row of gameLogic!.initialGameState">
+            <ng-container *ngFor="let cell of cell_row"> 
+                <app-play-cell 
+                            [cellData] = "cell"
+                            (wasClicked)="markCellClicked($event)"
+                            [style.--totalSize]="this.gameLogic!.snapshot['rowsXcols'] ?? 3" > 
+                </app-play-cell>
+            </ng-container> 
+        </ng-container>
+    </ng-container> 
+</ng-container>

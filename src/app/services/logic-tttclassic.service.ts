@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BasicGameServiceService } from './basic-game-service.service';
-import { FormBuilder } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TTTBeggarService extends BasicGameServiceService{
-
-  constructor() { 
-    super(new FormBuilder)
+export class LogicTTTClassicService extends BasicGameServiceService{
+  constructor() {
+    super();
   }
 }

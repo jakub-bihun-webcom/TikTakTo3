@@ -1,9 +1,0 @@
-<ng-container *ngIf="isLoaded"> 
-    <ng-container class="container" *ngFor="let cell_row of gameState"> 
-        <app-play-cell *ngFor="let cell of cell_row"
-                        [cellData] = "cell"
-                        (wasClicked)="markCell($event)"
-                        >
-        </app-play-cell>
-    </ng-container>
-</ng-container> 

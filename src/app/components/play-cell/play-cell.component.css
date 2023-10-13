@@ -1,0 +1,53 @@
+:host{
+    --totalSize: 3;
+    width     : calc(100%/var(--totalSize)   - 1.5px);
+    height    : calc(100%/var(--totalSize)   - 1.5px);
+    font-size : calc((60 / var(--totalSize)) * 0.8vw);
+    text-align: center;
+    line-height: 100%;
+    border : solid 1px black;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+:host(:hover){
+    filter:brightness(80%);
+}
+
+.player{
+    width  : 100%;
+    height : 100%;
+    background-color: rgb(26, 185, 26);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.enemy{
+    width  : 100%;
+    height : 100%;
+    background-color: rgb(228, 111, 131);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty{
+    display: flex;
+    width  : 100%;
+    height : 100%;
+    background-color: beige;
+}
+
+.bidAmount{
+    display: flex;
+    width  : 100%;
+    height : 50%;
+    position: relative;
+    font-size: 5vw;
+    text-align: center;
+    justify-content: center;
+    background-color: rgb(226, 226, 201);
+    z-index: 5;
+}

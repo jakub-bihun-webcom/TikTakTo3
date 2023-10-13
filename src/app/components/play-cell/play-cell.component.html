@@ -1,0 +1,14 @@
+ 
+    <div id="{{this.cellData.cellID}}" [ngClass]="{'player':this.cellData.cellState == 'O',
+                 'enemy' :this.cellData.cellState == 'X',
+                 'empty' :this.cellData.cellState == ' ' }"
+                 
+     > {{this.cellData.cellState}}  </div>
+
+    <ng-container *ngIf="this.setBid === true" > 
+        <input #bid class="bidAmount" type="number" id="bidAmount"
+            placeholder="Bid"
+            autofocus 
+            (click)="$event.stopPropagation()"
+            (keyup)="clampBid(bid, bid.value)">
+    </ng-container>

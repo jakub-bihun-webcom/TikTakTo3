@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameManagerComponent } from './game-manager.component';
+import { FormsModule } from '@angular/forms';
 
 describe('GameManagerComponent', () => {
   let component: GameManagerComponent;
